@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Post — Simple News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="index.html" aria-label="Home">
+        <img src="assets/logo.svg" alt="Simple News" />
+      </a>
+      <nav class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="login.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" style="padding:28px 0">
+    <article class="post-article" id="post-article">
+      <!-- post rendered by JS -->
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">© 2026 — Simple News</div>
+  </footer>
+
+  <script>
+    function q(selector){ return document.querySelector(selector); }
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    function getId(){ const u = new URL(location.href); return u.searchParams.get('id'); }
+
+    async function loadPost(){
+      const id = getId();
+      const container = q('#post-article');
+      if(!id){ container.innerHTML = '<p>Invalid post.</p>'; return; }
+      try{
+        const res = await fetch('posts.json', {cache:'no-store'});
+        if(!res.ok) throw new Error('posts.json not found');
+        const posts = await res.json();
+        const post = posts.find(p => String(p.id) === String(id));
+        if(!post){ container.innerHTML = '<p>Post not found.</p>'; return; }
+
+        const html = `
+          <header style="margin-bottom:18px">
+            <div class="kicker-small">${escapeHtml(post.category||'')}</div>
+            <h1 style="margin:8px 0 6px">${escapeHtml(post.title)}</h1>
+            <div style="color:var(--muted);font-size:14px">${escapeHtml(post.author||'Admin')} • ${escapeHtml(post.date||'')}</div>
+          </header>
+          <figure style="margin:18px 0"><img style="width:100%;border-radius:8px;" src="${post.image||'https://via.placeholder.com/1200x520?text=No+Image'}" alt="${escapeHtml(post.title)}"></figure>
+          <section class="post-content">${post.content||''}</section>
+          <p style="margin-top:24px"><a class="button" href="index.html">Back to home</a></p>
+        `;
+        container.innerHTML = html;
+      }catch(err){ container.innerHTML = '<p>Error loading post.</p>'; console.error(err); }
+    }
+
+    loadPost();
+  </script>
+</body>
+</html>

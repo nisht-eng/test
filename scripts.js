@@ -1,4 +1,4 @@
-// scripts.js — rendering, fetching posts, hero and grid
+// scripts.js — rendering, fetching posts, hero and grid, search, links to post page
 const POSTS_PATH = 'posts.json';
 
 async function fetchPosts(){
@@ -28,6 +28,8 @@ function createCard(post){
       <p>${escapeHtml(post.excerpt||stripHtml(post.content).slice(0,140)+'...')}</p>
       <div style="margin-top:8px;color:var(--muted);font-size:13px">${escapeHtml(post.author||'অপরিচিত')} • ${escapeHtml(post.date||'')}</div>
     </div>`;
+  // make clickable
+  el.addEventListener('click', ()=>{ location.href = `post.html?id=${encodeURIComponent(post.id)}`; });
   return el;
 }
 
@@ -39,9 +41,11 @@ function renderHero(post){
   card.className = 'hero-card';
   card.innerHTML = `
     <img loading="lazy" src="${post.image||'https://via.placeholder.com/1200x520?text=No+Image'}" alt="${escapeHtml(post.title)}">
-    <div class="kicker">${escapeHtml(post.category||'Top')}</div>
-    <h2>${escapeHtml(post.title)}</h2>
-    <div style="padding:0 12px 12px;color:var(--muted)">${escapeHtml(post.excerpt||stripHtml(post.content).slice(0,180)+'...')}</div>
+    <div style="padding:12px">
+      <div class="kicker-small">${escapeHtml(post.category||'Top')}</div>
+      <h2 style="margin-top:8px"><a href="post.html?id=${encodeURIComponent(post.id)}" style="color:inherit;text-decoration:none">${escapeHtml(post.title)}</a></h2>
+      <div style="color:var(--muted);margin-top:6px">${escapeHtml(post.excerpt||stripHtml(post.content).slice(0,180)+'...')}</div>
+    </div>
   `;
   hero.appendChild(card);
 }
@@ -53,7 +57,18 @@ function renderGrid(posts){
 
 function renderTrending(posts){
   const t = document.getElementById('trending'); t.innerHTML = '';
-  posts.slice(0,5).forEach(p=>{ const li = document.createElement('li'); li.innerHTML = `<a href="#">${escapeHtml(p.title)}</a>`; t.appendChild(li); });
+  posts.slice(0,5).forEach(p=>{ const li = document.createElement('li'); li.innerHTML = `<a href="post.html?id=${encodeURIComponent(p.id)}">${escapeHtml(p.title)}</a>`; t.appendChild(li); });
+}
+
+function filterPosts(){
+  const term = document.getElementById('search-term').value.trim().toLowerCase();
+  fetchPosts().then(posts => {
+    let filtered = posts;
+    if(term) filtered = posts.filter(p => (p.title||'').toLowerCase().includes(term) || (p.excerpt||'').toLowerCase().includes(term) || (p.content||'').toLowerCase().includes(term));
+    // hero + grid
+    if(filtered.length>0){ renderHero(filtered[0]); renderGrid(filtered.slice(1)); renderTrending(filtered); }
+    else{ document.getElementById('hero').innerHTML = '<p>No posts found.</p>'; document.getElementById('article-grid').innerHTML = ''; document.getElementById('trending').innerHTML = ''; }
+  });
 }
 
 (async function init(){
@@ -66,4 +81,9 @@ function renderTrending(posts){
     document.getElementById('hero').innerHTML = '<p>No posts yet.</p>';
     document.getElementById('article-grid').innerHTML = '<p>No posts yet.</p>';
   }
+  // search handler
+  document.getElementById('search-term').addEventListener('input', debounce(filterPosts, 250));
 })();
+
+// small debounce
+function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), ms); }; }
