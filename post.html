@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>পোস্ট</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script>
+    const OWNER = 'nisht-eng';
+    const REPO = 'test';
+    const BRANCH = 'static-blog';
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">নতুন ব্লগ</h1>
+    </div>
+  </header>
+  <main class="container post-container">
+    <article id="post-content"></article>
+  </main>
+  <footer class="site-footer"><div class="container">© আপনার ব্লগ</div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    async function loadPost() {
+      const params = new URLSearchParams(location.search);
+      const file = params.get('file');
+      if (!file) { document.getElementById('post-content').innerHTML = '<p>ফাইল সিলেক্ট করা হয়নি।</p>'; return; }
+      const rawUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${file}`;
+      try {
+        const res = await fetch(rawUrl);
+        if (!res.ok) throw new Error('Failed to fetch post');
+        const text = await res.text();
+        const metaMatch = text.match(/---([\s\S]*?)---/);
+        let body = text;
+        let title = '';
+        if (metaMatch) { body = text.replace(metaMatch[0], ''); const meta = metaMatch[1]; const t = meta.match(/title:\s*(.*)/); if (t) title = t[1].trim().replace(/^"|"$/g,''); }
+        document.title = title || 'পোস্ট';
+        const html = marked.parse(body);
+        document.getElementById('post-content').innerHTML = `<h2>${title}</h2>` + html;
+      } catch (err) {
+        document.getElementById('post-content').innerHTML = '<p>পোস্ট লোড করা যায়নি — '+err.message+'</p>';
+      }
+    }
+    loadPost();
+  </script>
+</body>
+</html>
+
