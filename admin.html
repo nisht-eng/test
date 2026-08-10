@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - Simple Blog</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Blog Admin</h1>
+    <nav><a href="index.html">Blog Home</a></nav>
+  </header>
+
+  <main>
+    <section class="controls">
+      <label>Mode:
+        <select id="mode">
+          <option value="local">Local (localStorage)</option>
+          <option value="github">GitHub (push to posts.json)</option>
+        </select>
+      </label>
+      <div id="github-settings" style="display:none;">
+        <p>GitHub Mode settings:</p>
+        <label>Owner: <input id="gh-owner" value="nisht-eng"></label>
+        <label>Repo: <input id="gh-repo" value="test"></label>
+        <label>Path (file): <input id="gh-path" value="posts.json"></label>
+        <label>Personal Access Token: <input id="gh-token" type="password" placeholder="paste PAT here (repo scope)"></label>
+        <p class="note">আপনি PAT তৈরি করে এখানে পেস্ট করলে admin সরাসরি posts.json আপডেট করবে। PAT এ repo write অনুমতি লাগবে।</p>
+      </div>
+    </section>
+
+    <section class="editor">
+      <h2>নতুন পোস্ট যোগ করুন</h2>
+      <label>শিরোনাম: <input id="title"></label>
+      <label>লেখক: <input id="author"></label>
+      <label>বিষয়বস্তু (HTML অনুমোদিত): <textarea id="content" rows="8"></textarea></label>
+      <button id="save">Save</button>
+      <div id="status"></div>
+    </section>
+
+    <section>
+      <h2>অস্তিত্বশীল পোস্ট</h2>
+      <ul id="post-list"></ul>
+    </section>
+  </main>
+
+  <script>
+    const modeEl = document.getElementById('mode');
+    const ghSettings = document.getElementById('github-settings');
+    const statusEl = document.getElementById('status');
+    const ownerEl = document.getElementById('gh-owner');
+    const repoEl = document.getElementById('gh-repo');
+    const pathEl = document.getElementById('gh-path');
+    const tokenEl = document.getElementById('gh-token');
+
+    modeEl.addEventListener('change', () => {
+      ghSettings.style.display = modeEl.value === 'github' ? 'block' : 'none';
+      loadExisting();
+    });
+
+    document.getElementById('save').addEventListener('click', async () => {
+      const post = {
+        id: Date.now().toString(),
+        title: document.getElementById('title').value.trim(),
+        author: document.getElementById('author').value.trim(),
+        date: new Date().toLocaleString(),
+        content: document.getElementById('content').value
+      };
+      if (!post.title) {
+        status('শিরোনাম লাগবে', true); return;
+      }
+      if (modeEl.value === 'local') {
+        saveLocal(post);
+      } else {
+        await saveToGitHub(post);
+      }
+    });
+
+    function status(msg, isErr=false) {
+      statusEl.textContent = msg;
+      statusEl.style.color = isErr ? 'crimson' : 'green';
+    }
+
+    function saveLocal(post) {
+      const raw = localStorage.getItem('blog_posts');
+      const posts = raw ? JSON.parse(raw) : [];
+      posts.push(post);
+      localStorage.setItem('blog_posts', JSON.stringify(posts));
+      status('Local-এ সেভ করা হয়েছে');
+      loadExisting();
+    }
+
+    async function loadExisting() {
+      const list = document.getElementById('post-list');
+      list.innerHTML = '<li>লোড হচ্ছে…</li>';
+      if (modeEl.value === 'local') {
+        const raw = localStorage.getItem('blog_posts');
+        const posts = raw ? JSON.parse(raw) : [];
+        renderList(posts);
+      } else {
+        try {
+          const owner = ownerEl.value.trim();
+          const repo = repoEl.value.trim();
+          const path = pathEl.value.trim();
+          const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
+          if (!res.ok) throw new Error('file not found');
+          const data = await res.json();
+          const content = atob(data.content.replace(/\n/g,''));
+          const posts = JSON.parse(content);
+          // cache sha for updates
+          list.dataset.sha = data.sha;
+          renderList(posts);
+        } catch (err) {
+          list.innerHTML = '<li>posts.json পাওয়া যায়নি — প্রথমে একটি posts.json আপলোড করুন বা Local mode ব্যবহার করুন।</li>';
+        }
+      }
+    }
+
+    function renderList(posts) {
+      const list = document.getElementById('post-list');
+      list.innerHTML = '';
+      if (!posts || posts.length === 0) { list.innerHTML = '<li>কোন পোস্ট নেই</li>'; return; }
+      posts.slice().reverse().forEach(p => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${escapeHtml(p.title)}</strong> — ${escapeHtml(p.author||'অনাম')} <small>${escapeHtml(p.date||'')}</small>`;
+        list.appendChild(li);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    async function saveToGitHub(post) {
+      status('GitHub-এ পাঠানো হচ্ছে…');
+      const owner = ownerEl.value.trim();
+      const repo = repoEl.value.trim();
+      const path = pathEl.value.trim();
+      const token = tokenEl.value.trim();
+      if (!token) { status('PAT দরকার (Token field)', true); return; }
+
+      try {
+        // 1) GET existing file to obtain sha and content
+        const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+          headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
+        });
+        let posts = [];
+        let sha = null;
+        if (getRes.ok) {
+          const data = await getRes.json();
+          sha = data.sha;
+          const content = atob(data.content.replace(/\n/g,''));
+          posts = JSON.parse(content);
+        } else if (getRes.status === 404) {
+          // file not found -> create new
+          posts = [];
+        } else {
+          throw new Error('GitHub থেকে file fetch করতে সমস্যা: ' + getRes.status);
+        }
+
+        posts.push(post);
+
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(posts, null, 2))));
+        const putBody = {
+          message: `Add post: ${post.title}`,
+          content: newContent,
+          committer: { name: "site-admin", email: "admin@example.com" }
+        };
+        if (sha) putBody.sha = sha;
+
+        const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+          method: 'PUT',
+          headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify(putBody)
+        });
+
+        if (!putRes.ok) {
+          const errText = await putRes.text();
+          throw new Error('GitHub PUT failed: ' + putRes.status + ' ' + errText);
+        }
+        status('GitHub-এ সেভ সফল হয়েছে');
+        loadExisting();
+      } catch (err) {
+        console.error(err);
+        status('ত্রুটি: ' + err.message, true);
+      }
+    }
+
+    // initial load
+    loadExisting();
+  </script>
+</body>
+</html>
