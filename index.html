@@ -3,64 +3,53 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Simple Blog</title>
+  <title>News — আমার সাইট</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>আমার সিম্পল ব্লগ</h1>
-    <nav><a href="admin.html">Admin Panel</a></nav>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="index.html" aria-label="Home">
+        <img src="assets/logo.svg" alt="logo" />
+      </a>
+      <nav class="main-nav">
+        <a href="#">Tech</a>
+        <a href="#">Reviews</a>
+        <a href="#">Mobile</a>
+        <a href="#">AI</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
   </header>
 
-  <main id="posts"></main>
+  <main class="wrap site-main">
+    <section class="hero" id="hero">
+      <!-- hero filled by JS -->
+    </section>
 
-  <template id="post-template">
-    <article class="post">
-      <h2 class="post-title"></h2>
-      <div class="meta"><span class="author"></span> • <time class="date"></time></div>
-      <div class="content"></div>
-    </article>
-  </template>
+    <div class="columns">
+      <section class="content" id="article-grid">
+        <!-- articles by JS -->
+      </section>
 
-  <script>
-    async function loadPosts() {
-      const target = document.getElementById('posts');
-      target.innerHTML = '<p>লোড হচ্ছে…</p>';
-      try {
-        const res = await fetch('posts.json', {cache: "no-store"});
-        if (!res.ok) throw new Error('posts.json লোড করা যায়নি');
-        const posts = await res.json();
-        renderPosts(posts);
-      } catch (err) {
-        // fallback: check localStorage
-        const raw = localStorage.getItem('blog_posts');
-        if (raw) {
-          renderPosts(JSON.parse(raw));
-        } else {
-          target.innerHTML = '<p>কোন পোস্ট পাওয়া যায়নি। অ্যাডমিন প্যানেলে গিয়ে পোস্ট যোগ করুন।</p>';
-        }
-      }
-    }
+      <aside class="sidebar">
+        <div class="widget">
+          <h3>Trending</h3>
+          <ul id="trending"></ul>
+        </div>
+        <div class="widget">
+          <h3>Subscribe</h3>
+          <p>নিউজলেটারে সাবস্ক্রাইব করতে ইমেইল দিন</p>
+          <form id="sub-form"><input placeholder="আপনার ইমেইল" type="email" required><button>Subscribe</button></form>
+        </div>
+      </aside>
+    </div>
+  </main>
 
-    function renderPosts(posts) {
-      const target = document.getElementById('posts');
-      target.innerHTML = '';
-      if (!posts || posts.length === 0) {
-        target.innerHTML = '<p>কোন পোস্ট নেই।</p>';
-        return;
-      }
-      const tmpl = document.getElementById('post-template');
-      posts.slice().reverse().forEach(p => {
-        const el = tmpl.content.cloneNode(true);
-        el.querySelector('.post-title').textContent = p.title;
-        el.querySelector('.author').textContent = p.author || 'অনাম';
-        el.querySelector('.date').textContent = p.date || '';
-        el.querySelector('.content').innerHTML = p.content || '';
-        target.appendChild(el);
-      });
-    }
+  <footer class="site-footer">
+    <div class="wrap">© 2026 — Simple News</div>
+  </footer>
 
-    loadPosts();
-  </script>
+  <script src="scripts.js"></script>
 </body>
 </html>
