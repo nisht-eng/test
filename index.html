@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="পার্সোনাল পোর্টফোলিও সাইট">
+    <title>আমার পার্সোনাল পোর্টফোলিও</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+            margin-top: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            animation: slideInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .hero .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: 2px solid white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .cta-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* About Section */
+        .about {
+            background: white;
+            padding: 4rem 0;
+            margin-top: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .about h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #667eea;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .about-image {
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            margin: 0 auto;
+        }
+
+        /* Skills Section */
+        .skills {
+            background: white;
+            padding: 4rem 0;
+            margin-top: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .skills h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #667eea;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .skill-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .skill-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-card p {
+            font-size: 0.95rem;
+        }
+
+        /* Projects Section */
+        .projects {
+            background: white;
+            padding: 4rem 0;
+            margin-top: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .projects h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #667eea;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .project-card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .project-card p {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-top: 3rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            font-size: 1.1rem;
+        }
+
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+            border-bottom: 2px solid white;
+            transition: all 0.3s;
+        }
+
+        .contact-item a:hover {
+            opacity: 0.8;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            transform: scale(1.1);
+            background: #667eea;
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Animations */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .profile-img {
+                width: 200px;
+                height: 200px;
+            }
+
+            .contact-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#home">হোম</a>
+            <a href="#about">আমার সম্পর্কে</a>
+            <a href="#skills">দক্ষতা</a>
+            <a href="#projects">প্রজেক্ট</a>
+            <a href="#contact">যোগাযোগ</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <h1>আপনার নাম এখানে</h1>
+            <p class="tagline">ওয়েব ডেভেলপার | ডিজাইনার | ইনোভেটর</p>
+            <p>আমি আপনার ডিজিটাল সমাধানের জন্য এখানে আছি</p>
+            <a href="#contact" class="cta-button">আমার সাথে যোগাযোগ করুন</a>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <h2>আমার সম্পর্কে</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>আপনার পরিচয় এবং পেশাদার পটভূমি এখানে লিখুন। আপনার অভিজ্ঞতা, শিক্ষা এবং ক্যারিয়ারের লক্ষ্য সম্পর্কে বলুন।</p>
+                        <p>আপনি কী করেন, কীভাবে কাজ করেন এবং আপনার দর্শনটি কী তা ব্যাখ্যা করুন। আপনার অনন্য মূল্য প্রস্তাব তুলে ধরুন।</p>
+                        <p>আপনার সাফল্যের গল্প, অর্জন এবং আপনি যে প্রভাব ফেলেছেন তা শেয়ার করুন।</p>
+                    </div>
+                    <div class="about-image">
+                        <div class="profile-img">👤</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="skills">
+            <div class="container">
+                <h2>আমার দক্ষতা</h2>
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <h3>💻 ওয়েব ডেভেলপমেন্ট</h3>
+                        <p>HTML, CSS, JavaScript, React, Node.js এবং আরও অনেক কিছু</p>
+                    </div>
+                    <div class="skill-card">
+                        <h3>🎨 UI/UX ডিজাইন</h3>
+                        <p>ব্যবহারকারী-বান্ধব ইন্টারফেস এবং চমৎকার ডিজাইন সৃষ্টি</p>
+                    </div>
+                    <div class="skill-card">
+                        <h3>📱 মোবাইল অ্যাপ</h3>
+                        <p>iOS এবং Android অ্যাপ্লিকেশন ডেভেলপমেন্ট</p>
+                    </div>
+                    <div class="skill-card">
+                        <h3>🔍 SEO অপটিমাইজেশন</h3>
+                        <p>ওয়েবসাইট এসইও এবং ডিজিটাল মার্কেটিং কৌশল</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects">
+            <div class="container">
+                <h2>আমার প্রজেক্ট</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <h3>প্রজেক্ট ১: ই-কমার্স প্ল্যাটফর্ম</h3>
+                        <p>একটি সম্পূর্ণ ই-কমার্স সলিউশন যেখানে ব্যবহারকারীরা কেনাকাটা করতে পারেন এবং পেমেন্ট গেটওয়ে সংযুক্ত রয়েছে।</p>
+                        <div class="project-tags">
+                            <span class="tag">React</span>
+                            <span class="tag">Node.js</span>
+                            <span class="tag">MongoDB</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h3>প্রজেক্ট ২: সোশ্যাল মিডিয়া অ্যাপ</h3>
+                        <p>একটি সোশ্যাল নেটওয়ার্কিং অ্যাপ্লিকেশন যেখানে ব্যবহারকারীরা পোস্ট শেয়ার করতে এবং সংযোগ স্থাপন করতে পারেন।</p>
+                        <div class="project-tags">
+                            <span class="tag">React Native</span>
+                            <span class="tag">Firebase</span>
+                            <span class="tag">Redux</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h3>প্রজেক্ট ৩: AI চ্যাটবট</h3>
+                        <p>একটি কৃত্রিম বুদ্ধিমত্তা চালিত চ্যাটবট যা গ্রাহক সেবা এবং সহায়তা প্রদান করে।</p>
+                        <div class="project-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">Machine Learning</span>
+                            <span class="tag">API</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>আমার সাথে যোগাযোগ করুন</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h3>📧 ইমেইল</h3>
+                        <a href="mailto:your.email@example.com">your.email@example.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <h3>📱 ফোন</h3>
+                        <a href="tel:+8801XXXXXXXXX">+880 1XXXXXXXXX</a>
+                    </div>
+                    <div class="contact-item">
+                        <h3>📍 লোকেশন</h3>
+                        <p>ঢাকা, বাংলাদেশ</p>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://github.com" class="social-link" title="GitHub">🔗</a>
+                    <a href="https://linkedin.com" class="social-link" title="LinkedIn">💼</a>
+                    <a href="https://twitter.com" class="social-link" title="Twitter">𝕏</a>
+                    <a href="https://facebook.com" class="social-link" title="Facebook">f</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 আপনার নাম। সকল অধিকার সংরক্ষিত।</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.skill-card, .project-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
