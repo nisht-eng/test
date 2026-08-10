@@ -1,0 +1,4 @@
+RewriteEngine On
+# If request is for .html and no file exists, internally rewrite to .php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)\.html$ $1.php [L]
