@@ -37,6 +37,9 @@
       <!-- sidebar rendered by JS -->
     </aside>
   </div>
+  <section class="related-posts" id="related-posts">
+    <!-- related posts rendered by JS -->
+  </section>
 </main>
 
 <footer class="site-footer">
@@ -97,6 +100,41 @@
     `;
   }
 
+  function renderRelatedPosts(posts, currentPost){
+    const wrap = q('#related-posts');
+    if(!wrap) return;
+
+    const sameCategory = posts.filter(p =>
+      String(p.id) !== String(currentPost.id) && p.category === currentPost.category
+    );
+
+    let related = sameCategory.slice(0, 4);
+    if(related.length < 4){
+      const fillers = posts
+        .filter(p => String(p.id) !== String(currentPost.id) && !related.includes(p))
+        .slice(0, 4 - related.length);
+      related = related.concat(fillers);
+    }
+
+    if(related.length === 0){ wrap.innerHTML = ''; return; }
+
+    const cardsHtml = related.map(p => `
+      <a class="grid-card" href="post.html?id=${encodeURIComponent(p.id)}">
+        <div class="card-media">
+          <span class="cat-badge">${escapeHtml(p.category||'')}</span>
+          <img src="${p.image||'https://via.placeholder.com/400x200?text=No+Image'}" alt="${escapeHtml(p.title)}">
+        </div>
+        <h3>${escapeHtml(p.title)}</h3>
+        <div class="card-byline">${escapeHtml(p.author||'Admin')} • ${escapeHtml(p.date||'')}</div>
+      </a>
+    `).join('');
+
+    wrap.innerHTML = `
+      <h2 class="category-heading">রিলেটেড পোস্ট</h2>
+      <div class="grid-4 related-grid">${cardsHtml}</div>
+    `;
+  }
+
   async function loadPost(){
     const id = getId();
     const container = q('#post-article');
@@ -121,6 +159,7 @@
       `;
       container.innerHTML = html;
       renderSidebar(posts, post.id);
+      renderRelatedPosts(posts, post);
     }catch(err){ container.innerHTML = '<p>Error loading post.</p>'; console.error(err); }
   }
 
