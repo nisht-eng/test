@@ -59,6 +59,11 @@ img{max-width:100%;display:block}
   color:var(--ink);border-bottom:3px solid var(--ink);padding-bottom:8px;margin:0 0 20px;
 }
 
+.category-heading{
+  font-size:26px;font-weight:800;letter-spacing:-.01em;margin:0 0 24px;
+  padding-bottom:14px;border-bottom:3px solid var(--ink);
+}
+
 /* Top grid: one large featured post + a 2x2 grid of smaller posts */
 .top-grid{
   display:grid;grid-template-columns:1.05fr 1fr;gap:28px;margin-bottom:40px;align-items:start;
@@ -176,11 +181,11 @@ img{max-width:100%;display:block}
   display:block;font-weight:700;color:var(--muted);margin-bottom:14px;
   letter-spacing:.02em;text-transform:uppercase;font-size:11px;
 }
-.auth-card input, .admin-card input, .admin-card textarea{
+.auth-card input, .admin-card input, .admin-card textarea, .admin-card select{
   display:block;width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--line);
   border-radius:4px;font-family:var(--font-body);font-size:14px;color:var(--ink);background:var(--surface);
 }
-.auth-card input:focus, .admin-card input:focus, .admin-card textarea:focus{
+.auth-card input:focus, .admin-card input:focus, .admin-card textarea:focus, .admin-card select:focus{
   outline:none;border-color:var(--accent);background:var(--paper);
 }
 .auth-card button, .admin-card button{

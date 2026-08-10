@@ -116,20 +116,39 @@ function renderAll(posts){
   renderMoreStories(posts.slice(5));
 }
 
-function filterPosts(){
-  const term = document.getElementById('search-term').value.trim().toLowerCase();
+function getCategoryParam(){
+  const u = new URL(location.href);
+  return (u.searchParams.get('category') || '').trim();
+}
+
+function applyFilters(){
+  const term = (document.getElementById('search-term')?.value || '').trim().toLowerCase();
+  const cat = getCategoryParam();
   fetchPosts().then(posts => {
     let filtered = posts;
-    if(term) filtered = posts.filter(p => (p.title||'').toLowerCase().includes(term) || (p.excerpt||'').toLowerCase().includes(term) || (p.content||'').toLowerCase().includes(term));
-    renderAll(filtered);
+    if(cat) filtered = filtered.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
+    if(term) filtered = filtered.filter(p => (p.title||'').toLowerCase().includes(term) || (p.excerpt||'').toLowerCase().includes(term) || (p.content||'').toLowerCase().includes(term));
+    renderAll(filtered.slice().sort((a,b) => new Date(b.date) - new Date(a.date)));
   });
 }
 
+function filterPosts(){ applyFilters(); }
+
+function highlightActiveNav(){
+  const cat = getCategoryParam();
+  document.querySelectorAll('#main-nav a[data-cat]').forEach(a => {
+    a.classList.toggle('active', a.dataset.cat.toLowerCase() === cat.toLowerCase());
+  });
+  const heading = document.getElementById('category-heading');
+  if(heading){
+    if(cat){ heading.textContent = cat; heading.style.display = 'block'; }
+    else{ heading.style.display = 'none'; }
+  }
+}
+
 (async function init(){
-  const posts = await fetchPosts();
-  // newest first
-  const sorted = posts.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
-  renderAll(sorted);
+  highlightActiveNav();
+  applyFilters();
   const searchInput = document.getElementById('search-term');
   if(searchInput) searchInput.addEventListener('input', debounce(filterPosts, 250));
 })();
