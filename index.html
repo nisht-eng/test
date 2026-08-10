@@ -3,21 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>News — আমার সাইট</title>
+  <title>Simple News — খবর</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="logo" href="index.html" aria-label="Home">
-        <img src="assets/logo.svg" alt="logo" />
+        <img src="assets/logo.svg" alt="Simple News" />
       </a>
+      <form class="search" onsubmit="event.preventDefault(); document.getElementById('search-term').blur(); filterPosts();">
+        <input id="search-term" placeholder="Search articles…" aria-label="Search" />
+      </form>
       <nav class="main-nav">
         <a href="#">Tech</a>
         <a href="#">Reviews</a>
         <a href="#">Mobile</a>
         <a href="#">AI</a>
-        <a href="admin.html">Admin</a>
+        <a href="login.html">Admin</a>
       </nav>
     </div>
   </header>
@@ -29,7 +35,7 @@
 
     <div class="columns">
       <section class="content" id="article-grid">
-        <!-- articles by JS -->
+        <!-- article cards by JS -->
       </section>
 
       <aside class="sidebar">
