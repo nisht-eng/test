@@ -1,4 +1,4 @@
-// scripts.js — rendering, fetching posts, admin token check
+// scripts.js — rendering, fetching posts, hero and grid
 const POSTS_PATH = 'posts.json';
 
 async function fetchPosts(){
@@ -13,11 +13,15 @@ async function fetchPosts(){
   }
 }
 
+function stripHtml(html){ return String(html||'').replace(/<[^>]*>/g, ''); }
+
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 function createCard(post){
   const el = document.createElement('article');
   el.className = 'card';
   el.innerHTML = `
-    <img loading="lazy" src="${post.image}" alt="${escapeHtml(post.title)}">
+    <img loading="lazy" src="${post.image||'https://via.placeholder.com/800x400?text=No+Image'}" alt="${escapeHtml(post.title)}">
     <div class="card-body">
       <div class="kicker-small">${escapeHtml(post.category||'')}</div>
       <h3>${escapeHtml(post.title)}</h3>
@@ -34,7 +38,7 @@ function renderHero(post){
   const card = document.createElement('div');
   card.className = 'hero-card';
   card.innerHTML = `
-    <img loading="lazy" src="${post.image}" alt="${escapeHtml(post.title)}">
+    <img loading="lazy" src="${post.image||'https://via.placeholder.com/1200x520?text=No+Image'}" alt="${escapeHtml(post.title)}">
     <div class="kicker">${escapeHtml(post.category||'Top')}</div>
     <h2>${escapeHtml(post.title)}</h2>
     <div style="padding:0 12px 12px;color:var(--muted)">${escapeHtml(post.excerpt||stripHtml(post.content).slice(0,180)+'...')}</div>
@@ -42,4 +46,24 @@ function renderHero(post){
   hero.appendChild(card);
 }
 
-function escapeHtml(s){return String(s||'').replace(/[&<>\
+function renderGrid(posts){
+  const grid = document.getElementById('article-grid'); grid.innerHTML = '';
+  posts.forEach(p=> grid.appendChild(createCard(p)));
+}
+
+function renderTrending(posts){
+  const t = document.getElementById('trending'); t.innerHTML = '';
+  posts.slice(0,5).forEach(p=>{ const li = document.createElement('li'); li.innerHTML = `<a href="#">${escapeHtml(p.title)}</a>`; t.appendChild(li); });
+}
+
+(async function init(){
+  const posts = await fetchPosts();
+  if(posts.length>0){
+    renderHero(posts[0]);
+    renderGrid(posts.slice(1));
+    renderTrending(posts);
+  } else {
+    document.getElementById('hero').innerHTML = '<p>No posts yet.</p>';
+    document.getElementById('article-grid').innerHTML = '<p>No posts yet.</p>';
+  }
+})();

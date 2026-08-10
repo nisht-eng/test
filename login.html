@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="wrap" style="max-width:520px;margin:60px auto">
+    <h1>Admin Login</h1>
+    <p>এই পাতা কেবল demo ব্যবহার। নিরাপত্তা নেই — প্রোডাকশনে ব্যবহার করবেন না।</p>
+    <form id="login-form">
+      <label>Username: <input id="username" required></label>
+      <label>Password: <input id="password" type="password" required></label>
+      <button type="submit">Login</button>
+      <div id="msg" style="margin-top:8px;color:crimson"></div>
+    </form>
+  </main>
+
+  <script src="config.js"></script>
+  <script>
+    const form = document.getElementById('login-form');
+    const msg = document.getElementById('msg');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      if (u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password) {
+        // simple token
+        localStorage.setItem('admin_token', btoa(u + ':' + Date.now()));
+        location.href = 'admin.html';
+      } else {
+        msg.textContent = 'Invalid credentials';
+      }
+    });
+  </script>
+</body>
+</html>
