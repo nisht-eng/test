@@ -1,82 +1,22 @@
 <!doctype html>
-<html lang="bn">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin — ব্লগ</title>
-  <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="site-title">ব্লগ Admin</h1>
-      <p class="site-desc">GitHub Personal Access Token ব্যবহার করে পোস্ট তৈরি/আপডেট করুন। (নির্দেশ README এ আছে)</p>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Site Admin</title>
+    <meta name="robots" content="noindex" />
+    <style>body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#f3f4f6} .box{max-width:640px;padding:1rem;background:#fff;border-radius:8px;box-shadow:0 6px 24px rgba(2,6,23,0.08);text-align:center} a{display:inline-block;margin-top:1rem;background:#0ea5a4;color:#fff;padding:0.6rem 1rem;border-radius:6px;text-decoration:none}</style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>Content Manager (Netlify CMS)</h1>
+      <p>Use the button below to open the Netlify CMS admin interface. You must deploy this site to Netlify and enable Identity + Git Gateway (see README).</p>
+      <a href="/admin/index.html#/">Open Admin</a>
     </div>
-  </header>
 
-  <main class="container">
-    <section class="admin-panel">
-      <label>GitHub Personal Access Token (repo scope):</label>
-      <input id="token" type="password" placeholder="ghp_..." style="width:100%">
-
-      <label>Title</label>
-      <input id="title" type="text" placeholder="পোস্টের শিরোনাম" style="width:100%">
-
-      <label>Slug (filename, e.g., 2026-08-10-my-post.md)</label>
-      <input id="slug" type="text" placeholder="2026-08-10-my-post.md" style="width:100%">
-
-      <label>Description (short)</label>
-      <input id="description" type="text" placeholder="সংক্ষিপ্ত বর্ণনা" style="width:100%">
-
-      <label>Tags (comma separated)</label>
-      <input id="tags" type="text" placeholder="tag1, tag2" style="width:100%">
-
-      <label>Content (Markdown)</label>
-      <textarea id="content" rows="12" style="width:100%" placeholder="# লিখুন আপনার পোস্ট...\n"></textarea>
-
-      <button id="publish">Publish</button>
-
-      <div id="status" style="margin-top:1em;color:green"></div>
-    </section>
-  </main>
-
-  <footer class="site-footer"><div class="container">© Admin</div></footer>
-
-  <script>
-    const OWNER = 'nisht-eng';
-    const REPO = 'test';
-    const BRANCH = 'static-blog';
-
-    document.getElementById('publish').addEventListener('click', async ()=>{
-      const token = document.getElementById('token').value.trim();
-      const title = document.getElementById('title').value.trim();
-      let slug = document.getElementById('slug').value.trim();
-      const description = document.getElementById('description').value.trim();
-      const tags = document.getElementById('tags').value.trim();
-      const content = document.getElementById('content').value;
-      if (!token || !title || !slug || !content) { alert('Token, title, slug ও content অবশ্যই লাগবে'); return; }
-      // ensure .md
-      if (!slug.endsWith('.md')) slug += '.md';
-      const frontmatter = `---\ntitle: "${title}"\ndescription: "${description}"\ntags: [${tags.split(',').map(t=>`\"${t.trim()}\"`).join(', ')}]\ndate: "${new Date().toISOString()}"\n---\n\n`;
-      const full = frontmatter + content;
-      const b64 = btoa(unescape(encodeURIComponent(full)));
-      const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/posts/${encodeURIComponent(slug)}`;
-      const body = { message: `Add post ${slug}`, content: b64, branch: BRANCH };
-      try {
-        const res = await fetch(api, { method: 'PUT', headers: { Authorization: 'token '+token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        const data = await res.json();
-        if (res.ok) {
-          document.getElementById('status').innerText = 'Published successfully!';
-        } else {
-          console.error(data);
-          document.getElementById('status').innerText = 'Error: ' + (data.message || 'Unknown');
-          document.getElementById('status').style.color = 'red';
-        }
-      } catch (err) {
-        document.getElementById('status').innerText = 'Request failed: '+err.message;
-        document.getElementById('status').style.color = 'red';
-      }
-    });
-  </script>
-</body>
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Netlify CMS -->
+    <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  </body>
 </html>

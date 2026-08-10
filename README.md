@@ -1,25 +1,35 @@
-# Test repo — ব্লগ সেটআপ
+# Test repo — ব্লগ সেটআপ (Netlify CMS)
 
-এই ব্রাঞ্চে (static-blog) আমি একটি সরল, SEO-ফ্রেন্ডলি এবং মোবাইল-রেস্পন্সিভ ব্লগ টেমপ্লেট যোগ করেছি। নিচে দ্রুত নোট এবং কীভাবে ব্যবহার করবেন তা আছে।
+এই ব্রাঞ্চে (static-blog) আমি Netlify CMS ইন্টিগ্রেশন জন্য প্রয়োজনীয় ফাইলগুলো যোগ করেছি। নিচে ধাপে ধাপে নির্দেশ দেয়া আছে কিভাবে Netlify ব্যবহার করে আপনি GUI‑ভিত্তিক admin দিয়ে পোস্ট করতে পারবেন (PAT ব্যবহার না করেই)।
 
-ফিচার:
-- index.html: হোমপেজ, পোস্ট তালিকা দেখায় (posts/ ডিরেক্টরি থেকে)
-- post.html: পোস্ট দেখার পেইজ (post.html?file=posts/2026-08-10-welcome.md)
-- admin/index.html: ব্রাউজার-ভিত্তিক admin পেইজ — Personal Access Token ব্যবহার করে `posts/` এ markdown ফাইল আপলোড করে
-- css/: স্টাইলশীট
-- posts/: sample markdown পোস্ট
+কী আছে এখানে:
+- admin/index.html — Netlify CMS loader (এখান থেকে CMS UI খুলবে)
+- admin/config.yml — Netlify CMS কনফিগ (git-gateway backend, posts collection)
+- netlify.toml — Netlify deploy নির্দেশ (publish folder root)
 
-কীভাবে কাজ করে (দ্রুত):
-1. GitHub Personal Access Token (PAT) তৈরি করুন — Settings > Developer settings > Personal access tokens। Token-এ "repo" স্কোপ দিন (কমপক্ষে repo:contents)।
-2. `admin/` পেইজে গিয়ে টোকেন পেস্ট করুন, শিরোনাম, slug (ফাইল নাম) ও কন্টেন্ট লিখে Publish চাপুন।
-3. পেজটি `static-blog` ব্রাঞ্চে ফাইল তৈরি করবে।
-4. সাইট দেখতে GitHub Pages সেটিংসে যেতে হবে: Settings > Pages > Branch: `static-blog` এবং root (/) নির্বাচন করুন। তারপর সাইট আপনার GitHub Pages URL এ প্রকাশিত হবে।
+Netlify সেটআপ (ধাপে ধাপে)
+1. Netlify এ একটি অ্যাকাউন্ট তৈরি করুন (https://app.netlify.com/). 
+2. New site → "Import from Git" → GitHub → আপনার রিপো (nisht-eng/test) connect করুন।
+   - Deploy settings এ Branch to deploy হিসেবে `static-blog` নির্বাচন করুন।
+3. Deploy site করুন — এটি আপনার সাইটকে Netlify এ হোস্ট করবে।
 
-নিরাপত্তা নোটস:
-- Admin পেইজটি একটি সহজ পদ্ধতি ব্যবহার করে যা ব্রাউজারে সরাসরি PAT লাগে; production-এ OAuth App/Netlify CMS/Identity ব্যবহার করা নিরাপদ।
-- PAT দিলে পূর্ণ repo-অ্যাক্সেস দেয়া হতে পারে — সরাসরি ব্যবহার করার সময় সাবধান থাকুন।
+Netlify Identity & Git Gateway চালু করা
+1. Netlify site dashboard → Settings → Identity → Enable Identity service (Enable Identity)
+2. Identity → Registration preferences: নির্ভর করে; simplest: Invite only বা Open (Open হলে কেউ সাইন আপ করতে পারবে)
+3. Identity → Services → Git Gateway → Enable Git Gateway
+   - Git Gateway ব্যবহার করতে Netlify আপনাকে GitHub repo access দিতে বলবে — অনুমোদন করুন।
+4. Identity → Invite users: আপনার নিজের ইমেইল Invite করে Accept করে নিন OR Open registration দিয়ে Sign up করুন।
 
-ফলো-আপ:
-- আপনি চাইলে আমি Netlify-মুখী Netlify CMS বা GitHub OAuth সেটআপ করতে পারি যাতে ব্যবহারকারীর জন্য সহজ লগইন প্রস্তুত হয়।
-- আপনি চাইলে আমি আরও থিমিং, sitemap generation, RSS feed, এবং Google Analytics যোগ করে দেব।
+Admin UI ব্যবহার
+- একবার site ডিপ্লয় হয়ে Identity + Git Gateway enabled হলে, যান:
+  https://<your-netlify-site>.netlify.app/admin/
+- Netlify Identity দিয়ে লগইন করুন (Sign in with email) — এরপর আপনি Netlify CMS UI থেকে নতুন পোস্ট create, edit, delete করতে পারবেন।
+
+অতিরিক্ত তথ্য ও নিরাপত্তা
+- Netlify Identity + Git Gateway সেটআপ করলে ব্যবহারকারীরা ব্রাউজার-ভিত্তিক লগইন দিয়ে GitHub‑এ commit তৈরি করতে পারবে — PAT ব্যবহারের প্রয়োজন নেই।
+- যদি আপনি চাইলে আমি Netlify সেটআপে সাহায্য করতে পারি (আপনি আমাকে বলতে পারেন আপনার Netlify site name বা আমাকে collaborator/invite করতে পারেন) — কিন্তু নিরাপত্তার কারণে আপনার Netlify অ্যাকাউন্ট credentials আমাকে দেবেন না।
+
+প্রয়োগের পর আমি যা করব
+- আপনি Netlify এ সাইট connect ও deploy করলে আমাকে বলুন — আমি CMS দিয়ে একটি টেস্ট পোস্ট তৈরি করে দেখব এবং নিশ্চিত করব যে `posts/` ডিরেক্টরিতে commit হচ্ছে এবং index.html তা দেখাচ্ছে।
+- চাইলে আমি আরও কনফিগ (media handling, custom collections, default templates) করে দেব।
 

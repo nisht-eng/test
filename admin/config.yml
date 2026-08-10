@@ -1,0 +1,23 @@
+backend:
+  name: git-gateway
+  branch: static-blog
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+
+collections:
+  - name: "posts"
+    label: "Posts"
+    folder: "posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    format: "yaml-frontmatter"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Description", name: "description", widget: "string"}
+      - {label: "Tags", name: "tags", widget: "list"}
+      - {label: "Body", name: "body", widget: "markdown"}
