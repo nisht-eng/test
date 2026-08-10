@@ -1,0 +1,160 @@
+<?php $page_title = 'Admin Dashboard'; include __DIR__ . '/header.php'; ?>
+
+<body style="background:var(--surface)">
+  <main class="wrap" style="max-width:960px;padding:32px 20px 60px">
+    <div class="admin-card">
+      <h1>Admin Panel</h1>
+      <p>আপনি লগইন করেছেন। নিচে নতুন পোস্ট যোগ / সম্পাদনা / ডিলিট করতে পারবেন।</p>
+
+      <section style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap">
+        <div style="flex:2;min-width:280px">
+          <h2 style="font-size:19px;font-weight:800;margin-top:0">নতুন / সম্পাদনা</h2>
+          <label>শিরোনাম <input id="title"></label>
+          <label>ক্যাটাগরি
+            <select id="category">
+              <option value="Domain">Domain</option>
+              <option value="Hosting">Hosting</option>
+              <option value="Website">Website</option>
+              <option value="Mobile">Mobile</option>
+              <option value="Computer">Computer</option>
+              <option value="Freelancing">Freelancing</option>
+              <option value="SEO">SEO</option>
+            </select>
+          </label>
+          <label>ছবি URL <input id="image"></label>
+          <label>লেখক <input id="author"></label>
+          <label>সংক্ষিপ্ত <input id="excerpt"></label>
+          <label>বিস্তারিত (HTML অনুমোদিত) <textarea id="content" rows="8"></textarea></label>
+          <div style="margin-top:10px">
+            <button id="save">Save (Local)</button>
+            <button id="save-github">Save (GitHub)</button>
+          </div>
+          <div id="status" style="margin-top:10px;font-size:13px;font-weight:600"></div>
+        </div>
+
+        <aside style="flex:1;min-width:240px">
+          <h3>অস্তিত্বশীল পোস্ট</h3>
+          <ul id="posts-list"></ul>
+        </aside>
+      </section>
+
+      <section class="gh-settings">
+        <h3>GitHub Push Settings (optional)</h3>
+        <p style="margin-bottom:14px">যদি আপনি posts.json সরাসরি রিপোতে আপডেট করতে চান, নিচে PAT দিন (repo scope)।</p>
+        <label>Owner <input id="gh-owner" value="nisht-eng"></label>
+        <label>Repo <input id="gh-repo" value="test"></label>
+        <label>Path <input id="gh-path" value="posts.json"></label>
+        <label>Personal Access Token <input id="gh-token" type="password" placeholder="paste PAT here"></label>
+      </section>
+    </div>
+  </main>
+
+  <script src="config.js"></script>
+  <script>
+    // protect page
+    const token = localStorage.getItem('admin_token');
+    if (!token) { location.href = 'login.html'; }
+
+    document.getElementById('logout').addEventListener('click', (e)=>{ e.preventDefault(); localStorage.removeItem('admin_token'); location.href='login.html'; });
+
+    const POSTS_KEY = 'blog_posts';
+    const statusEl = document.getElementById('status');
+
+    function status(msg, err=false){ statusEl.textContent = msg; statusEl.style.color = err? 'crimson':'green'; }
+
+    function loadLocalPosts(){
+      const raw = localStorage.getItem(POSTS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    function saveLocalPosts(posts){ localStorage.setItem(POSTS_KEY, JSON.stringify(posts)); }
+
+    function renderList(){
+      const list = document.getElementById('posts-list'); list.innerHTML='';
+      const posts = loadLocalPosts();
+      if(posts.length===0){ list.innerHTML='<li>কোন পোস্ট নেই</li>'; return; }
+      posts.slice().reverse().forEach(p=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${escapeHtml(p.title)}</strong> <br><small>${escapeHtml(p.date||'')}</small> <div style="margin-top:6px"><button data-id="${p.id}" class="edit">Edit</button> <butt[...];
+        list.appendChild(li);
+      });
+      list.querySelectorAll('.edit').forEach(b=>b.addEventListener('click', e=>loadForEdit(e.target.dataset.id)));
+      list.querySelectorAll('.del').forEach(b=>b.addEventListener('click', e=>{ if(confirm('Delete?')) deletePost(e.target.dataset.id); }));
+    }
+
+    function loadForEdit(id){
+      const posts = loadLocalPosts();
+      const p = posts.find(x=>x.id===id);
+      if(!p) return;
+      document.getElementById('title').value = p.title;
+      document.getElementById('category').value = p.category||'';
+      document.getElementById('image').value = p.image||'';
+      document.getElementById('author').value = p.author||'';
+      document.getElementById('excerpt').value = p.excerpt||'';
+      document.getElementById('content').value = p.content||'';
+      document.getElementById('save').dataset.edit = id;
+    }
+
+    function deletePost(id){
+      let posts = loadLocalPosts(); posts = posts.filter(p=>p.id!==id); saveLocalPosts(posts); renderList(); status('Deleted');
+    }
+
+    document.getElementById('save').addEventListener('click', ()=>{
+      const post = collectPost();
+      if(!post.title){ status('Title is required',true); return; }
+      let posts = loadLocalPosts();
+      const editId = document.getElementById('save').dataset.edit;
+      if(editId){ posts = posts.map(p=> p.id===editId ? {...post,id:editId, date:p.date} : p ); delete document.getElementById('save').dataset.edit; status('Updated locally'); }
+      else { post.id = Date.now().toString(); post.date = new Date().toLocaleString(); posts.push(post); status('Saved locally'); }
+      saveLocalPosts(posts); renderList(); clearForm();
+    });
+
+    document.getElementById('save-github').addEventListener('click', async ()=>{
+      const post = collectPost(); if(!post.title){ status('Title is required',true); return; }
+      // push to github: fetch existing posts.json (if any) then PUT
+      const owner = document.getElementById('gh-owner').value.trim();
+      const repo = document.getElementById('gh-repo').value.trim();
+      const path = document.getElementById('gh-path').value.trim();
+      const token = document.getElementById('gh-token').value.trim();
+      if(!token){ status('PAT required',true); return; }
+      status('Pushing to GitHub...');
+      try{
+        const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { headers: { Authorization: 'token '+token, Accept: 'application/vnd.github.v3+json' } });
+        let posts = []; let sha = null;
+        if(getRes.ok){ const data = await getRes.json(); sha = data.sha; const content = atob(data.content.replace(/\n/g,'')); posts = JSON.parse(content); }
+        else if(getRes.status===404) posts = [];
+        else throw new Error('Fetch failed: '+getRes.status);
+
+        post.id = Date.now().toString(); post.date = new Date().toLocaleString(); posts.push(post);
+        const newContent = btoa(unescape(encodeURIComponent(JSON.stringify(posts, null, 2))));
+        const body = { message: `Add post: ${post.title}`, content: newContent, committer: { name: 'site-admin', email: 'admin@example.com' } };
+        if(sha) body.sha = sha;
+        const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { method:'PUT', headers:{ Authorization: 'token '+token, Accept: 'application/vnd.github.v3+json' }, body: JSON.stringify(body) });
+        if(!putRes.ok){ const txt = await putRes.text(); throw new Error('PUT failed: '+putRes.status+' '+txt); }
+        status('Pushed to GitHub');
+      }catch(err){ console.error(err); status('Error: '+err.message,true); }
+    });
+
+    function collectPost(){
+      return {
+        title: document.getElementById('title').value.trim(),
+        category: document.getElementById('category').value.trim(),
+        image: document.getElementById('image').value.trim() || 'https://via.placeholder.com/800x400?text=No+Image',
+        author: document.getElementById('author').value.trim() || 'Admin',
+        excerpt: document.getElementById('excerpt').value.trim(),
+        content: document.getElementById('content').value
+      };
+    }
+
+    function clearForm(){ document.getElementById('title').value=''; document.getElementById('category').value=''; document.getElementById('image').value=''; document.getElementById('author').value=''; document.getElementById('excerpt').value=''; document.getElementById('content').value=''; }
+
+    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    // initial load: if no local posts, try loading from posts.json into local storage
+    (async function init(){
+      try{ const res = await fetch('posts.json', {cache:'no-store'}); if(res.ok){ const posts = await res.json(); saveLocalPosts(posts); } }catch(e){}
+      renderList();
+    })();
+  </script>
+
+<?php include __DIR__ . '/footer.php'; ?>
