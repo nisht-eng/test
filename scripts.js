@@ -96,11 +96,77 @@ function createStoryRow(post){
   return el;
 }
 
+const PAGE_SIZE = 10;
+let latestPostsCache = [];
+let currentPage = 1;
+
 function renderMoreStories(posts){
   const list = document.getElementById('more-stories-list');
   list.innerHTML = '';
   if(posts.length === 0){ list.innerHTML = '<p style="color:var(--muted)">আর কোনো পোস্ট নেই।</p>'; return; }
   posts.forEach(p => list.appendChild(createStoryRow(p)));
+}
+
+function getPageNumbers(current, total){
+  const delta = 2;
+  const range = [];
+  const withDots = [];
+  let last;
+  for(let i=1;i<=total;i++){
+    if(i===1 || i===total || (i>=current-delta && i<=current+delta)) range.push(i);
+  }
+  range.forEach(i => {
+    if(last){
+      if(i - last === 2) withDots.push(last+1);
+      else if(i - last > 2) withDots.push('…');
+    }
+    withDots.push(i);
+    last = i;
+  });
+  return withDots;
+}
+
+function renderPagination(totalItems){
+  const nav = document.getElementById('pagination');
+  if(!nav) return;
+  nav.innerHTML = '';
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+  if(totalPages <= 1) return;
+
+  const makeBtn = (label, page, {active=false, disabled=false, isNav=false} = {}) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    btn.className = 'page-btn' + (active ? ' active' : '') + (isNav ? ' page-nav' : '');
+    if(disabled) btn.disabled = true;
+    else btn.addEventListener('click', () => goToPage(page));
+    return btn;
+  };
+
+  nav.appendChild(makeBtn('‹ আগের', currentPage-1, {disabled: currentPage===1, isNav:true}));
+
+  getPageNumbers(currentPage, totalPages).forEach(p => {
+    if(p === '…'){
+      const dots = document.createElement('span');
+      dots.className = 'page-dots';
+      dots.textContent = '…';
+      nav.appendChild(dots);
+    }else{
+      nav.appendChild(makeBtn(String(p), p, {active: p===currentPage}));
+    }
+  });
+
+  nav.appendChild(makeBtn('পরের ›', currentPage+1, {disabled: currentPage===totalPages, isNav:true}));
+}
+
+function goToPage(page){
+  const totalPages = Math.ceil(latestPostsCache.length / PAGE_SIZE);
+  if(page < 1 || page > totalPages) return;
+  currentPage = page;
+  const start = (page-1) * PAGE_SIZE;
+  renderMoreStories(latestPostsCache.slice(start, start + PAGE_SIZE));
+  renderPagination(latestPostsCache.length);
+  document.querySelector('.more-stories')?.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function renderHomeSidebar(allPosts, shownPosts){
@@ -145,6 +211,7 @@ function renderAll(posts){
   if(posts.length === 0){
     document.getElementById('top-grid').innerHTML = '';
     document.getElementById('more-stories-list').innerHTML = '';
+    document.getElementById('pagination').innerHTML = '';
     const sidebar = document.getElementById('home-sidebar');
     if(sidebar) sidebar.innerHTML = '';
     if(empty) empty.style.display = 'block';
@@ -152,7 +219,12 @@ function renderAll(posts){
   }
   if(empty) empty.style.display = 'none';
   renderTopGrid(posts.slice(0,5));
-  renderMoreStories(posts.slice(5));
+
+  latestPostsCache = posts.slice(5);
+  currentPage = 1;
+  renderMoreStories(latestPostsCache.slice(0, PAGE_SIZE));
+  renderPagination(latestPostsCache.length);
+
   renderHomeSidebar(posts, posts.slice(0,5));
 }
 
