@@ -1,6 +1,10 @@
-<?php $page_title = 'Admin Dashboard'; include __DIR__ . '/header.php'; ?>
+<?php
+$page_title  = 'Admin Dashboard';
+$header_mode = 'admin';
+$body_style  = 'background:var(--surface)';
+include __DIR__ . '/header.php';
+?>
 
-<body style="background:var(--surface)">
   <main class="wrap" style="max-width:960px;padding:32px 20px 60px">
     <div class="admin-card">
       <h1>Admin Panel</h1>
@@ -53,9 +57,9 @@
   <script>
     // protect page
     const token = localStorage.getItem('admin_token');
-    if (!token) { location.href = 'login.html'; }
+    if (!token) { location.href = 'login.php'; }
 
-    document.getElementById('logout').addEventListener('click', (e)=>{ e.preventDefault(); localStorage.removeItem('admin_token'); location.href='login.html'; });
+    document.getElementById('logout').addEventListener('click', (e)=>{ e.preventDefault(); localStorage.removeItem('admin_token'); location.href='login.php'; });
 
     const POSTS_KEY = 'blog_posts';
     const statusEl = document.getElementById('status');

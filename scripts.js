@@ -38,7 +38,7 @@ function dek(post){
 function createFeaturedCard(post){
   const el = document.createElement('a');
   el.className = 'featured-card';
-  el.href = `post.html?id=${encodeURIComponent(post.id)}`;
+  el.href = `post.php?id=${encodeURIComponent(post.id)}`;
   el.innerHTML = `
     <div class="card-media">
       <span class="cat-badge">${escapeHtml(post.category||'Top')}</span>
@@ -53,7 +53,7 @@ function createFeaturedCard(post){
 function createGridCard(post){
   const el = document.createElement('a');
   el.className = 'grid-card';
-  el.href = `post.html?id=${encodeURIComponent(post.id)}`;
+  el.href = `post.php?id=${encodeURIComponent(post.id)}`;
   el.innerHTML = `
     <div class="card-media">
       <span class="cat-badge">${escapeHtml(post.category||'')}</span>
@@ -84,7 +84,7 @@ function renderTopGrid(posts){
 function createStoryRow(post){
   const el = document.createElement('a');
   el.className = 'story-row';
-  el.href = `post.html?id=${encodeURIComponent(post.id)}`;
+  el.href = `post.php?id=${encodeURIComponent(post.id)}`;
   el.innerHTML = `
     <img loading="lazy" src="${post.image||'https://via.placeholder.com/400x260?text=No+Image'}" alt="${escapeHtml(post.title)}">
     <div>
@@ -180,7 +180,7 @@ function renderHomeSidebar(allPosts, shownPosts){
 
   const popularHtml = source.map(p => `
     <li>
-      <a class="sidebar-post" href="post.html?id=${encodeURIComponent(p.id)}">
+      <a class="sidebar-post" href="post.php?id=${encodeURIComponent(p.id)}">
         <img src="${p.image||'https://via.placeholder.com/160x160?text=No+Image'}" alt="${escapeHtml(p.title)}">
         <div>
           <div class="kicker">${escapeHtml(p.category||'')}</div>
@@ -191,7 +191,7 @@ function renderHomeSidebar(allPosts, shownPosts){
   `).join('');
 
   const categoriesHtml = categories.map(c => `
-    <li><a href="index.html?category=${encodeURIComponent(c)}">${escapeHtml(c)}</a></li>
+    <li><a href="index.php?category=${encodeURIComponent(c)}">${escapeHtml(c)}</a></li>
   `).join('');
 
   sidebar.innerHTML = `

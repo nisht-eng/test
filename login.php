@@ -1,6 +1,10 @@
-<?php $page_title = 'Login — Admin'; include __DIR__ . '/header.php'; ?>
+<?php
+$page_title  = 'Login — Admin';
+$header_mode = 'simple';
+$body_style  = 'background:var(--surface)';
+include __DIR__ . '/header.php';
+?>
 
-<body style="background:var(--surface)">
 <main class="wrap" style="max-width:440px;margin:80px auto">
   <div class="auth-card">
     <h1>Admin Login</h1>
@@ -25,7 +29,7 @@
     if (u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password) {
       // simple token
       localStorage.setItem('admin_token', btoa(u + ':' + Date.now()));
-      location.href = 'admin.html';
+      location.href = 'admin.php';
     } else {
       msg.textContent = 'Invalid credentials';
     }
