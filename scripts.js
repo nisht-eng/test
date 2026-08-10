@@ -130,8 +130,8 @@ function renderPagination(totalItems){
   const nav = document.getElementById('pagination');
   if(!nav) return;
   nav.innerHTML = '';
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-  if(totalPages <= 1) return;
+  if(totalItems === 0) return;
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
   const makeBtn = (label, page, {active=false, disabled=false, isNav=false} = {}) => {
     const btn = document.createElement('button');
