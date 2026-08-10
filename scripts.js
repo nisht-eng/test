@@ -103,17 +103,57 @@ function renderMoreStories(posts){
   posts.forEach(p => list.appendChild(createStoryRow(p)));
 }
 
+function renderHomeSidebar(allPosts, shownPosts){
+  const sidebar = document.getElementById('home-sidebar');
+  if(!sidebar) return;
+
+  const shownIds = new Set(shownPosts.map(p => String(p.id)));
+  const popular = allPosts.filter(p => !shownIds.has(String(p.id))).slice(0,5);
+  const source = popular.length ? popular : allPosts.slice(0,5);
+  const categories = [...new Set(allPosts.map(p => p.category).filter(Boolean))];
+
+  const popularHtml = source.map(p => `
+    <li>
+      <a class="sidebar-post" href="post.html?id=${encodeURIComponent(p.id)}">
+        <img src="${p.image||'https://via.placeholder.com/160x160?text=No+Image'}" alt="${escapeHtml(p.title)}">
+        <div>
+          <div class="kicker">${escapeHtml(p.category||'')}</div>
+          <h4>${escapeHtml(p.title)}</h4>
+        </div>
+      </a>
+    </li>
+  `).join('');
+
+  const categoriesHtml = categories.map(c => `
+    <li><a href="index.html?category=${encodeURIComponent(c)}">${escapeHtml(c)}</a></li>
+  `).join('');
+
+  sidebar.innerHTML = `
+    <div class="sidebar-widget">
+      <h3>জনপ্রিয় পোস্ট</h3>
+      <ul class="sidebar-recent">${popularHtml || '<li>কোনো পোস্ট নেই</li>'}</ul>
+    </div>
+    <div class="sidebar-widget">
+      <h3>ক্যাটাগরি</h3>
+      <ul class="sidebar-categories">${categoriesHtml || '<li>কোনো ক্যাটাগরি নেই</li>'}</ul>
+    </div>
+  `;
+}
+
 function renderAll(posts){
   const empty = document.getElementById('empty-state');
   if(posts.length === 0){
     document.getElementById('top-grid').innerHTML = '';
     document.getElementById('more-stories-list').innerHTML = '';
+    const sidebar = document.getElementById('home-sidebar');
+    if(sidebar) sidebar.innerHTML = '';
     if(empty) empty.style.display = 'block';
     return;
   }
   if(empty) empty.style.display = 'none';
   renderTopGrid(posts.slice(0,5));
   renderMoreStories(posts.slice(5));
+  renderHomeSidebar(posts, posts.slice(0,5));
 }
 
 function getCategoryParam(){
