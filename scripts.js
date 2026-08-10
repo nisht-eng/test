@@ -1,4 +1,4 @@
-// scripts.js — rendering, fetching posts, hero and grid, search, links to post page
+// scripts.js — fetch posts, render hero / secondary grid / more-stories list, search
 const POSTS_PATH = 'posts.json';
 
 async function fetchPosts(){
@@ -17,47 +17,97 @@ function stripHtml(html){ return String(html||'').replace(/<[^>]*>/g, ''); }
 
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-function createCard(post){
-  const el = document.createElement('article');
-  el.className = 'card';
-  el.innerHTML = `
-    <img loading="lazy" src="${post.image||'https://via.placeholder.com/800x400?text=No+Image'}" alt="${escapeHtml(post.title)}">
-    <div class="card-body">
-      <div class="kicker-small">${escapeHtml(post.category||'')}</div>
-      <h3>${escapeHtml(post.title)}</h3>
-      <p>${escapeHtml(post.excerpt||stripHtml(post.content).slice(0,140)+'...')}</p>
-      <div style="margin-top:8px;color:var(--muted);font-size:13px">${escapeHtml(post.author||'অপরিচিত')} • ${escapeHtml(post.date||'')}</div>
-    </div>`;
-  // make clickable
-  el.addEventListener('click', ()=>{ location.href = `post.html?id=${encodeURIComponent(post.id)}`; });
-  return el;
+function timeAgo(dateStr){
+  if(!dateStr) return '';
+  const d = new Date(dateStr);
+  if(isNaN(d)) return escapeHtml(dateStr);
+  const diffMs = Date.now() - d.getTime();
+  const mins = Math.floor(diffMs/60000);
+  if(mins < 60) return `${mins} মিনিট আগে`;
+  const hrs = Math.floor(mins/60);
+  if(hrs < 24) return `${hrs} ঘণ্টা আগে`;
+  const days = Math.floor(hrs/24);
+  if(days < 7) return `${days} দিন আগে`;
+  return d.toLocaleDateString('bn-BD', { year:'numeric', month:'long', day:'numeric' });
+}
+
+function dek(post){
+  return post.excerpt || stripHtml(post.content).slice(0,140) + '...';
 }
 
 function renderHero(post){
   const hero = document.getElementById('hero');
   hero.innerHTML = '';
   if(!post) return;
-  const card = document.createElement('div');
+  const card = document.createElement('a');
   card.className = 'hero-card';
+  card.href = `post.html?id=${encodeURIComponent(post.id)}`;
   card.innerHTML = `
-    <img loading="lazy" src="${post.image||'https://via.placeholder.com/1200x520?text=No+Image'}" alt="${escapeHtml(post.title)}">
-    <div style="padding:12px">
-      <div class="kicker-small">${escapeHtml(post.category||'Top')}</div>
-      <h2 style="margin-top:8px"><a href="post.html?id=${encodeURIComponent(post.id)}" style="color:inherit;text-decoration:none">${escapeHtml(post.title)}</a></h2>
-      <div style="color:var(--muted);margin-top:6px">${escapeHtml(post.excerpt||stripHtml(post.content).slice(0,180)+'...')}</div>
+    <img loading="lazy" src="${post.image||'https://via.placeholder.com/1200x600?text=No+Image'}" alt="${escapeHtml(post.title)}">
+    <div class="hero-body">
+      <div class="kicker">${escapeHtml(post.category||'Top')}</div>
+      <h1>${escapeHtml(post.title)}</h1>
+      <p class="dek">${escapeHtml(dek(post))}</p>
+      <div class="byline">By ${escapeHtml(post.author||'অপরিচিত')} • ${timeAgo(post.date)}<span class="readmore">Read More</span></div>
     </div>
   `;
   hero.appendChild(card);
 }
 
-function renderGrid(posts){
-  const grid = document.getElementById('article-grid'); grid.innerHTML = '';
-  posts.forEach(p=> grid.appendChild(createCard(p)));
+function createSecondaryCard(post){
+  const el = document.createElement('a');
+  el.className = 'sec-card';
+  el.href = `post.html?id=${encodeURIComponent(post.id)}`;
+  el.innerHTML = `
+    <img loading="lazy" src="${post.image||'https://via.placeholder.com/800x500?text=No+Image'}" alt="${escapeHtml(post.title)}">
+    <div class="kicker" style="margin-top:10px">${escapeHtml(post.category||'')}</div>
+    <h3>${escapeHtml(post.title)}</h3>
+    <p class="dek">${escapeHtml(dek(post))}</p>
+  `;
+  return el;
 }
 
-function renderTrending(posts){
-  const t = document.getElementById('trending'); t.innerHTML = '';
-  posts.slice(0,5).forEach(p=>{ const li = document.createElement('li'); li.innerHTML = `<a href="post.html?id=${encodeURIComponent(p.id)}">${escapeHtml(p.title)}</a>`; t.appendChild(li); });
+function renderSecondary(posts){
+  const grid = document.getElementById('secondary-grid');
+  grid.innerHTML = '';
+  posts.forEach(p => grid.appendChild(createSecondaryCard(p)));
+}
+
+function createStoryRow(post){
+  const el = document.createElement('a');
+  el.className = 'story-row';
+  el.href = `post.html?id=${encodeURIComponent(post.id)}`;
+  el.innerHTML = `
+    <img loading="lazy" src="${post.image||'https://via.placeholder.com/400x260?text=No+Image'}" alt="${escapeHtml(post.title)}">
+    <div>
+      <div class="meta"><span class="kicker">${escapeHtml(post.category||'')}</span>By ${escapeHtml(post.author||'অপরিচিত')} • ${timeAgo(post.date)}</div>
+      <h3>${escapeHtml(post.title)}</h3>
+      <p class="dek">${escapeHtml(dek(post))}</p>
+    </div>
+  `;
+  return el;
+}
+
+function renderMoreStories(posts){
+  const list = document.getElementById('more-stories-list');
+  list.innerHTML = '';
+  if(posts.length === 0){ list.innerHTML = '<p style="color:var(--muted)">আর কোনো পোস্ট নেই।</p>'; return; }
+  posts.forEach(p => list.appendChild(createStoryRow(p)));
+}
+
+function renderAll(posts){
+  const empty = document.getElementById('empty-state');
+  if(posts.length === 0){
+    document.getElementById('hero').innerHTML = '';
+    document.getElementById('secondary-grid').innerHTML = '';
+    document.getElementById('more-stories-list').innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  renderHero(posts[0]);
+  renderSecondary(posts.slice(1,4));
+  renderMoreStories(posts.slice(4));
 }
 
 function filterPosts(){
@@ -65,25 +115,17 @@ function filterPosts(){
   fetchPosts().then(posts => {
     let filtered = posts;
     if(term) filtered = posts.filter(p => (p.title||'').toLowerCase().includes(term) || (p.excerpt||'').toLowerCase().includes(term) || (p.content||'').toLowerCase().includes(term));
-    // hero + grid
-    if(filtered.length>0){ renderHero(filtered[0]); renderGrid(filtered.slice(1)); renderTrending(filtered); }
-    else{ document.getElementById('hero').innerHTML = '<p>No posts found.</p>'; document.getElementById('article-grid').innerHTML = ''; document.getElementById('trending').innerHTML = ''; }
+    renderAll(filtered);
   });
 }
 
 (async function init(){
   const posts = await fetchPosts();
-  if(posts.length>0){
-    renderHero(posts[0]);
-    renderGrid(posts.slice(1));
-    renderTrending(posts);
-  } else {
-    document.getElementById('hero').innerHTML = '<p>No posts yet.</p>';
-    document.getElementById('article-grid').innerHTML = '<p>No posts yet.</p>';
-  }
-  // search handler
-  document.getElementById('search-term').addEventListener('input', debounce(filterPosts, 250));
+  // newest first
+  const sorted = posts.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+  renderAll(sorted);
+  const searchInput = document.getElementById('search-term');
+  if(searchInput) searchInput.addEventListener('input', debounce(filterPosts, 250));
 })();
 
-// small debounce
 function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), ms); }; }

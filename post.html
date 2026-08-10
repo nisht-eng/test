@@ -1,78 +1,83 @@
 <!doctype html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Post — Simple News</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Post — Simple News</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="masthead-bar">
-    <div class="wrap">
-      <span><span class="wire-dot"></span>সরাসরি সংবাদ ফিড</span>
-      <span id="masthead-date"></span>
-    </div>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="Home">
+      <img src="assets/logo.svg" alt="" />
+      <span class="logo-text">Simple News</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Latest</a>
+      <a href="index.html">News</a>
+      <a href="index.html">AI</a>
+      <a href="index.html">Reviews</a>
+      <a href="index.html">Mobile</a>
+      <a href="login.html">Admin</a>
+    </nav>
   </div>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <a class="logo" href="index.html" aria-label="Home">
-        <img src="assets/logo.svg" alt="" />
-        <span class="logo-text">Simple<span class="accent"> News</span></span>
-      </a>
-      <nav class="main-nav">
-        <a href="index.html">Home</a>
-        <a href="login.html">Admin</a>
-      </nav>
+</header>
+
+<main class="post-wrap" id="post-article">
+  <!-- post rendered by JS -->
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="login.html">Admin</a>
     </div>
-  </header>
+    <div class="footer-bottom">© 2026 Simple News. All Rights Reserved.</div>
+  </div>
+</footer>
 
-  <main class="wrap" style="padding:28px 0">
-    <article class="post-article" id="post-article">
-      <!-- post rendered by JS -->
-    </article>
-  </main>
+<script>
+  function q(selector){ return document.querySelector(selector); }
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  <footer class="site-footer">
-    <div class="wrap">© 2026 — Simple News</div>
-  </footer>
+  function getId(){ const u = new URL(location.href); return u.searchParams.get('id'); }
 
-  <script>
-    document.getElementById('masthead-date').textContent =
-      new Date().toLocaleDateString('bn-BD', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    function q(selector){ return document.querySelector(selector); }
-    function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function initials(name){
+    return String(name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  }
 
-    function getId(){ const u = new URL(location.href); return u.searchParams.get('id'); }
+  async function loadPost(){
+    const id = getId();
+    const container = q('#post-article');
+    if(!id){ container.innerHTML = '<p>Invalid post.</p>'; return; }
+    try{
+      const res = await fetch('posts.json', {cache:'no-store'});
+      if(!res.ok) throw new Error('posts.json not found');
+      const posts = await res.json();
+      const post = posts.find(p => String(p.id) === String(id));
+      if(!post){ container.innerHTML = '<p>Post not found.</p>'; return; }
 
-    async function loadPost(){
-      const id = getId();
-      const container = q('#post-article');
-      if(!id){ container.innerHTML = '<p>Invalid post.</p>'; return; }
-      try{
-        const res = await fetch('posts.json', {cache:'no-store'});
-        if(!res.ok) throw new Error('posts.json not found');
-        const posts = await res.json();
-        const post = posts.find(p => String(p.id) === String(id));
-        if(!post){ container.innerHTML = '<p>Post not found.</p>'; return; }
+      const html = `
+        <div class="kicker post-kicker">${escapeHtml(post.category||'')}</div>
+        <h1>${escapeHtml(post.title)}</h1>
+        <div class="post-byline">
+          <div class="avatar">${escapeHtml(initials(post.author))}</div>
+          <div>By ${escapeHtml(post.author||'Admin')} • ${escapeHtml(post.date||'')}</div>
+        </div>
+        <img class="post-hero-img" src="${post.image||'https://via.placeholder.com/1200x600?text=No+Image'}" alt="${escapeHtml(post.title)}">
+        <div class="post-content">${post.content||''}</div>
+        <a class="post-back" href="index.html">← Back to home</a>
+      `;
+      container.innerHTML = html;
+    }catch(err){ container.innerHTML = '<p>Error loading post.</p>'; console.error(err); }
+  }
 
-        const html = `
-          <header style="margin-bottom:18px">
-            <div class="kicker-small">${escapeHtml(post.category||'')}</div>
-            <h1 style="margin:8px 0 6px">${escapeHtml(post.title)}</h1>
-            <div style="color:var(--muted);font-size:14px">${escapeHtml(post.author||'Admin')} • ${escapeHtml(post.date||'')}</div>
-          </header>
-          <figure style="margin:18px 0"><img style="width:100%;border-radius:8px;" src="${post.image||'https://via.placeholder.com/1200x520?text=No+Image'}" alt="${escapeHtml(post.title)}"></figure>
-          <section class="post-content">${post.content||''}</section>
-          <p style="margin-top:24px"><a class="button" href="index.html">Back to home</a></p>
-        `;
-        container.innerHTML = html;
-      }catch(err){ container.innerHTML = '<p>Error loading post.</p>'; console.error(err); }
-    }
-
-    loadPost();
-  </script>
+  loadPost();
+</script>
 </body>
 </html>

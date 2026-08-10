@@ -6,21 +6,15 @@
   <title>Admin Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body style="background:var(--surface)">
-  <div class="masthead-bar">
-    <div class="wrap">
-      <span><span class="wire-dot"></span>অ্যাডমিন প্যানেল</span>
-      <span id="masthead-date"></span>
-    </div>
-  </div>
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="logo" href="index.html" aria-label="Home">
         <img src="assets/logo.svg" alt="" />
-        <span class="logo-text">Simple<span class="accent"> News</span></span>
+        <span class="logo-text">Simple News</span>
       </a>
       <nav class="main-nav">
         <a href="index.html">Home</a>
@@ -36,7 +30,7 @@
 
       <section style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap">
         <div style="flex:2;min-width:280px">
-          <h2 style="font-family:var(--font-display);font-size:19px;margin-top:0">নতুন / সম্পাদনা</h2>
+          <h2 style="font-size:19px;font-weight:800;margin-top:0">নতুন / সম্পাদনা</h2>
           <label>শিরোনাম <input id="title"></label>
           <label>ক্যাটাগরি <input id="category"></label>
           <label>ছবি URL <input id="image"></label>
@@ -47,7 +41,7 @@
             <button id="save">Save (Local)</button>
             <button id="save-github">Save (GitHub)</button>
           </div>
-          <div id="status" style="margin-top:10px;font-family:var(--font-mono);font-size:13px"></div>
+          <div id="status" style="margin-top:10px;font-size:13px;font-weight:600"></div>
         </div>
 
         <aside style="flex:1;min-width:240px">
@@ -69,8 +63,6 @@
 
   <script src="config.js"></script>
   <script>
-    document.getElementById('masthead-date').textContent =
-      new Date().toLocaleDateString('bn-BD', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
     // protect page
     const token = localStorage.getItem('admin_token');
     if (!token) { location.href = 'login.html'; }

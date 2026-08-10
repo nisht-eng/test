@@ -1,72 +1,71 @@
 <!doctype html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Simple News — খবর</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Simple News — খবর</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="masthead-bar">
-    <div class="wrap">
-      <span><span class="wire-dot"></span>সরাসরি সংবাদ ফিড</span>
-      <span id="masthead-date"></span>
-    </div>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html" aria-label="Home">
+      <img src="assets/logo.svg" alt="" />
+      <span class="logo-text">Simple News</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html" class="active">Latest</a>
+      <a href="#">News</a>
+      <a href="#">AI</a>
+      <a href="#">Reviews</a>
+      <a href="#">Mobile</a>
+      <a href="#">Gaming</a>
+      <a href="#">Big Tech</a>
+      <a href="login.html">Admin</a>
+    </nav>
+    <form class="search" onsubmit="event.preventDefault(); document.getElementById('search-term').blur(); filterPosts();">
+      <input id="search-term" placeholder="Search…" aria-label="Search" />
+    </form>
   </div>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <a class="logo" href="index.html" aria-label="Home">
-        <img src="assets/logo.svg" alt="" />
-        <span class="logo-text">Simple<span class="accent"> News</span></span>
-      </a>
-      <form class="search" onsubmit="event.preventDefault(); document.getElementById('search-term').blur(); filterPosts();">
-        <input id="search-term" placeholder="Search articles…" aria-label="Search" />
-      </form>
-      <nav class="main-nav">
-        <a href="#">Tech</a>
-        <a href="#">Reviews</a>
-        <a href="#">Mobile</a>
-        <a href="#">AI</a>
-        <a href="login.html">Admin</a>
-      </nav>
+</header>
+
+<main class="wrap site-main">
+  <section class="hero" id="hero">
+    <!-- hero filled by JS -->
+  </section>
+
+  <section class="secondary-grid" id="secondary-grid">
+    <!-- secondary cards filled by JS -->
+  </section>
+
+  <section class="more-stories">
+    <h2 class="section-label">More Stories</h2>
+    <div id="more-stories-list">
+      <!-- story rows filled by JS -->
     </div>
-  </header>
+    <p id="empty-state" style="display:none;color:var(--muted)">কোনো পোস্ট পাওয়া যায়নি।</p>
+  </section>
+</main>
 
-  <main class="wrap site-main">
-    <section class="hero" id="hero">
-      <!-- hero filled by JS -->
-    </section>
-
-    <div class="columns">
-      <section class="content" id="article-grid">
-        <!-- article cards by JS -->
-      </section>
-
-      <aside class="sidebar">
-        <div class="widget">
-          <h3>Trending</h3>
-          <ul id="trending"></ul>
-        </div>
-        <div class="widget">
-          <h3>Subscribe</h3>
-          <p>নিউজলেটারে সাবস্ক্রাইব করতে ইমেইল দিন</p>
-          <form id="sub-form"><input placeholder="আপনার ইমেইল" type="email" required><button>Subscribe</button></form>
-        </div>
-      </aside>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-links">
+      <a href="#">Latest</a>
+      <a href="#">News</a>
+      <a href="#">AI</a>
+      <a href="#">Reviews</a>
+      <a href="#">Mobile</a>
+      <a href="#">Gaming</a>
+      <a href="#">Big Tech</a>
+      <a href="login.html">Admin</a>
     </div>
-  </main>
+    <div class="footer-bottom">© 2026 Simple News. All Rights Reserved.</div>
+  </div>
+</footer>
 
-  <footer class="site-footer">
-    <div class="wrap">© 2026 — Simple News</div>
-  </footer>
-
-  <script>
-    document.getElementById('masthead-date').textContent =
-      new Date().toLocaleDateString('bn-BD', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  </script>
-  <script src="scripts.js"></script>
+<script src="scripts.js"></script>
 </body>
 </html>
