@@ -35,42 +35,50 @@ function dek(post){
   return post.excerpt || stripHtml(post.content).slice(0,140) + '...';
 }
 
-function renderHero(post){
-  const hero = document.getElementById('hero');
-  hero.innerHTML = '';
-  if(!post) return;
-  const card = document.createElement('a');
-  card.className = 'hero-card';
-  card.href = `post.html?id=${encodeURIComponent(post.id)}`;
-  card.innerHTML = `
-    <img loading="lazy" src="${post.image||'https://via.placeholder.com/1200x600?text=No+Image'}" alt="${escapeHtml(post.title)}">
-    <div class="hero-body">
-      <div class="kicker">${escapeHtml(post.category||'Top')}</div>
-      <h1>${escapeHtml(post.title)}</h1>
-      <p class="dek">${escapeHtml(dek(post))}</p>
-      <div class="byline">By ${escapeHtml(post.author||'অপরিচিত')} • ${timeAgo(post.date)}<span class="readmore">Read More</span></div>
-    </div>
-  `;
-  hero.appendChild(card);
-}
-
-function createSecondaryCard(post){
+function createFeaturedCard(post){
   const el = document.createElement('a');
-  el.className = 'sec-card';
+  el.className = 'featured-card';
   el.href = `post.html?id=${encodeURIComponent(post.id)}`;
   el.innerHTML = `
-    <img loading="lazy" src="${post.image||'https://via.placeholder.com/800x500?text=No+Image'}" alt="${escapeHtml(post.title)}">
-    <div class="kicker" style="margin-top:10px">${escapeHtml(post.category||'')}</div>
-    <h3>${escapeHtml(post.title)}</h3>
-    <p class="dek">${escapeHtml(dek(post))}</p>
+    <div class="card-media">
+      <span class="cat-badge">${escapeHtml(post.category||'Top')}</span>
+      <img loading="lazy" src="${post.image||'https://via.placeholder.com/1200x700?text=No+Image'}" alt="${escapeHtml(post.title)}">
+    </div>
+    <h1>${escapeHtml(post.title)}</h1>
+    <div class="card-byline">${escapeHtml(post.author||'অপরিচিত')}</div>
   `;
   return el;
 }
 
-function renderSecondary(posts){
-  const grid = document.getElementById('secondary-grid');
-  grid.innerHTML = '';
-  posts.forEach(p => grid.appendChild(createSecondaryCard(p)));
+function createGridCard(post){
+  const el = document.createElement('a');
+  el.className = 'grid-card';
+  el.href = `post.html?id=${encodeURIComponent(post.id)}`;
+  el.innerHTML = `
+    <div class="card-media">
+      <span class="cat-badge">${escapeHtml(post.category||'')}</span>
+      <img loading="lazy" src="${post.image||'https://via.placeholder.com/600x320?text=No+Image'}" alt="${escapeHtml(post.title)}">
+    </div>
+    <h3>${escapeHtml(post.title)}</h3>
+    <div class="card-byline">${escapeHtml(post.author||'অপরিচিত')}</div>
+  `;
+  return el;
+}
+
+function renderTopGrid(posts){
+  const section = document.getElementById('top-grid');
+  section.innerHTML = '';
+  if(!posts.length) return;
+
+  const featured = posts[0];
+  const rest = posts.slice(1,5);
+
+  section.appendChild(createFeaturedCard(featured));
+
+  const grid = document.createElement('div');
+  grid.className = 'grid-4';
+  rest.forEach(p => grid.appendChild(createGridCard(p)));
+  section.appendChild(grid);
 }
 
 function createStoryRow(post){
@@ -98,16 +106,14 @@ function renderMoreStories(posts){
 function renderAll(posts){
   const empty = document.getElementById('empty-state');
   if(posts.length === 0){
-    document.getElementById('hero').innerHTML = '';
-    document.getElementById('secondary-grid').innerHTML = '';
+    document.getElementById('top-grid').innerHTML = '';
     document.getElementById('more-stories-list').innerHTML = '';
     if(empty) empty.style.display = 'block';
     return;
   }
   if(empty) empty.style.display = 'none';
-  renderHero(posts[0]);
-  renderSecondary(posts.slice(1,4));
-  renderMoreStories(posts.slice(4));
+  renderTopGrid(posts.slice(0,5));
+  renderMoreStories(posts.slice(5));
 }
 
 function filterPosts(){
