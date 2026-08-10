@@ -6,14 +6,21 @@
   <title>Post — Simple News</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="masthead-bar">
+    <div class="wrap">
+      <span><span class="wire-dot"></span>সরাসরি সংবাদ ফিড</span>
+      <span id="masthead-date"></span>
+    </div>
+  </div>
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="logo" href="index.html" aria-label="Home">
-        <img src="assets/logo.svg" alt="Simple News" />
+        <img src="assets/logo.svg" alt="" />
+        <span class="logo-text">Simple<span class="accent"> News</span></span>
       </a>
       <nav class="main-nav">
         <a href="index.html">Home</a>
@@ -33,6 +40,8 @@
   </footer>
 
   <script>
+    document.getElementById('masthead-date').textContent =
+      new Date().toLocaleDateString('bn-BD', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
     function q(selector){ return document.querySelector(selector); }
     function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 

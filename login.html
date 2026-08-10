@@ -4,18 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Login — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <main class="wrap" style="max-width:520px;margin:60px auto">
-    <h1>Admin Login</h1>
-    <p>এই পাতা কেবল demo ব্যবহার। নিরাপত্তা নেই — প্রোডাকশনে ব্যবহার করবেন না।</p>
-    <form id="login-form">
-      <label>Username: <input id="username" required></label>
-      <label>Password: <input id="password" type="password" required></label>
-      <button type="submit">Login</button>
-      <div id="msg" style="margin-top:8px;color:crimson"></div>
-    </form>
+<body style="background:var(--surface)">
+  <main class="wrap" style="max-width:440px;margin:80px auto">
+    <div class="auth-card">
+      <h1>Admin Login</h1>
+      <p>এই পাতা কেবল ডেমো ব্যবহারের জন্য। নিরাপত্তা নেই — প্রোডাকশনে ব্যবহার করবেন না।</p>
+      <form id="login-form">
+        <label>Username <input id="username" required></label>
+        <label>Password <input id="password" type="password" required></label>
+        <button type="submit">Log in</button>
+        <div id="msg" style="margin-top:12px;color:var(--signal-dark)"></div>
+      </form>
+    </div>
   </main>
 
   <script src="config.js"></script>

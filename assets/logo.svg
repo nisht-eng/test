@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="120" height="32" viewBox="0 0 120 32" xmlns="http://www.w3.org/2000/svg">
-  <rect width="120" height="32" rx="4" fill="#d32f2f"/>
-  <text x="12" y="21" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#fff">Simple News</text>
+<svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+  <rect width="34" height="34" rx="7" fill="#14171c"/>
+  <circle cx="17" cy="20" r="3.4" fill="#c8332a"/>
+  <path d="M11.5 15.5a8 8 0 0 1 11 0" stroke="#f1efe9" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M8 12a13 13 0 0 1 18 0" stroke="#c8332a" stroke-width="2" fill="none" stroke-linecap="round"/>
 </svg>
