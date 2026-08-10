@@ -111,7 +111,38 @@ img{max-width:100%;display:block}
 .footer-bottom{font-size:12px;color:#8a8a8a;border-top:1px solid #2b2b2b;padding-top:16px}
 
 /* ---------- Post page ---------- */
-.post-wrap{max-width:800px;margin:0 auto;padding:36px 20px 60px}
+.post-wrap{max-width:1100px;margin:0 auto;padding:36px 20px 60px}
+
+.post-layout{
+  display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start;
+}
+#post-article{max-width:800px;min-width:0}
+
+.post-sidebar{
+  position:sticky;top:24px;display:flex;flex-direction:column;gap:24px;min-width:0;
+}
+.sidebar-widget{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;
+}
+.sidebar-widget h3{
+  font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:10px;margin:0 0 16px;
+}
+.sidebar-recent{list-style:none;margin:0;padding:0}
+.sidebar-recent li{border-bottom:1px dashed var(--line);padding:14px 0}
+.sidebar-recent li:first-child{padding-top:0}
+.sidebar-recent li:last-child{border-bottom:none;padding-bottom:0}
+.sidebar-post{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:start}
+.sidebar-post img{width:64px;height:64px;object-fit:cover;border-radius:4px}
+.sidebar-post .kicker{font-size:10px;margin-bottom:4px}
+.sidebar-post h4{font-size:14px;font-weight:700;line-height:1.35;margin:0;color:var(--ink)}
+.sidebar-post:hover h4{color:var(--accent-dark)}
+.sidebar-categories{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.sidebar-categories li a{
+  display:inline-block;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;
+  background:var(--paper);border:1px solid var(--line);color:var(--ink);
+}
+.sidebar-categories li a:hover{border-color:var(--accent);color:var(--accent-dark)}
 .post-kicker{margin-bottom:10px}
 .post-wrap h1{font-size:34px;font-weight:800;line-height:1.2;margin:0 0 14px}
 .post-byline{
@@ -175,6 +206,9 @@ img{max-width:100%;display:block}
   .story-row{grid-template-columns:140px 1fr}
   .story-row img{height:100px}
   .hero-card h1, .hero-card h2{font-size:28px}
+  .post-layout{grid-template-columns:1fr}
+  #post-article{max-width:none}
+  .post-sidebar{position:static}
 }
 @media(max-width:640px){
   .header-inner{flex-wrap:wrap}

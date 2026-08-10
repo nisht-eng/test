@@ -27,8 +27,15 @@
   </div>
 </header>
 
-<main class="post-wrap" id="post-article">
-  <!-- post rendered by JS -->
+<main class="post-wrap">
+  <div class="post-layout">
+    <article id="post-article">
+      <!-- post rendered by JS -->
+    </article>
+    <aside class="post-sidebar" id="post-sidebar">
+      <!-- sidebar rendered by JS -->
+    </aside>
+  </div>
 </main>
 
 <footer class="site-footer">
@@ -49,6 +56,44 @@
 
   function initials(name){
     return String(name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  }
+
+  function renderSidebar(posts, currentId){
+    const sidebar = q('#post-sidebar');
+    if(!sidebar) return;
+
+    const recent = posts
+      .filter(p => String(p.id) !== String(currentId))
+      .slice(0, 5);
+
+    const categories = [...new Set(posts.map(p => p.category).filter(Boolean))];
+
+    const recentHtml = recent.map(p => `
+      <li>
+        <a class="sidebar-post" href="post.html?id=${encodeURIComponent(p.id)}">
+          <img src="${p.image||'https://via.placeholder.com/160x160?text=No+Image'}" alt="${escapeHtml(p.title)}">
+          <div>
+            <div class="kicker">${escapeHtml(p.category||'')}</div>
+            <h4>${escapeHtml(p.title)}</h4>
+          </div>
+        </a>
+      </li>
+    `).join('');
+
+    const categoriesHtml = categories.map(c => `
+      <li><a href="index.html">${escapeHtml(c)}</a></li>
+    `).join('');
+
+    sidebar.innerHTML = `
+      <div class="sidebar-widget">
+        <h3>সাম্প্রতিক পোস্ট</h3>
+        <ul class="sidebar-recent">${recentHtml || '<li>কোনো পোস্ট নেই</li>'}</ul>
+      </div>
+      <div class="sidebar-widget">
+        <h3>ক্যাটাগরি</h3>
+        <ul class="sidebar-categories">${categoriesHtml || '<li>কোনো ক্যাটাগরি নেই</li>'}</ul>
+      </div>
+    `;
   }
 
   async function loadPost(){
@@ -74,6 +119,7 @@
         <a class="post-back" href="index.html">← Back to home</a>
       `;
       container.innerHTML = html;
+      renderSidebar(posts, post.id);
     }catch(err){ container.innerHTML = '<p>Error loading post.</p>'; console.error(err); }
   }
 
